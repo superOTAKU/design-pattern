@@ -19,8 +19,6 @@ public class AwardPool implements Entity {
     private String name;
     private AwardRepository awardRepository;
 
-    private static final int LIST_SIZE = 10000;
-
     public AwardPool() {}
 
     public AwardPool(Long id, String name) {
@@ -35,34 +33,50 @@ public class AwardPool implements Entity {
         return awardRepository.findAwardsByPoolId(id);
     }
 
+    private static class Range {
+        //左包含
+        private double start;
+        //右不包含
+        private double end;
+
+        boolean inRange(double num) {
+            return num >= start && num < end;
+        }
+    }
+
     /**
      * 抽奖，主要的领域逻辑就是这里了
      * @return 奖品，如果没抽中，结果为null
      */
     public Award drawAward() {
-        List<Award> awards = getAwards();
-        //怎么抽奖？这里逻辑是创建10000个格子，按概率设置格子的值，概率多的格子多
-        List<Integer> slots = new ArrayList<>(LIST_SIZE);
-        int totalCount = 0;
-        for (int i = 0; i < awards.size(); i++) {
-            int count = (int)(awards.get(i).getChance() * LIST_SIZE);
-            for (int j = 0; j < count && totalCount < LIST_SIZE; j++, totalCount++) {
-                slots.add(i);
+        List<Award> awards = new ArrayList<>(getAwards());
+        Double totalChance = awards.stream().map(Award::getChance).reduce(0D, Double::sum);
+        if (totalChance > 1) {
+            throw new IllegalStateException("awards in this awardPool is illegal!");
+        }
+        //改算法，每个award对应0到1中的一个数据范围，范围根据自身概率确定
+        Collections.shuffle(awards);
+        double total = 0;
+        List<Range> ranges = new ArrayList<>();
+        for (var award : awards) {
+            Range range = new Range();
+            range.start = total;
+            range.end = total + award.getChance();
+            total += award.getChance();
+            ranges.add(range);
+        }
+        double result = ThreadLocalRandom.current().nextDouble(0, 1);
+        int i = 0;
+        for (var range : ranges) {
+            if (range.inRange(result)) {
+                break;
             }
+            i++;
         }
-        //剩下的放-1
-        for (int i = slots.size(); i < LIST_SIZE; i++) {
-            slots.add(-1);
+        if (i < awards.size()) {
+            return awards.get(i);
         }
-        //打乱格子顺序
-        Collections.shuffle(slots);
-        //抽奖
-        int randomIndex = ThreadLocalRandom.current().nextInt(0, LIST_SIZE);
-        Integer awardIndex = slots.get(randomIndex);
-        if (awardIndex == -1) {
-            return null;
-        }
-        return awards.get(awardIndex);
+        return null;
     }
 
     //依赖注入进来

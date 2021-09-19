@@ -35,7 +35,7 @@ public class AwardPoolTest {
         }
         //打印出每个奖品，奖品中奖概率，实际中奖概率
         Map<Long, AwardResult> resultMap = new HashMap<>();
-        final int totalCount = 100000;
+        final int totalCount = 10000000;
         for (int i = 0; i < totalCount; i++) {
             Award award = awardPool.drawAward();
             if (award == null) {
