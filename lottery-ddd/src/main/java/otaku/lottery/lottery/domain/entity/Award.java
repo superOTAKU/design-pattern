@@ -11,6 +11,8 @@ public class Award implements Entity {
     private Long id;
     private Long poolId;
     private String content;
+    //奖品的个数
+    private Integer count;
     private double chance;
 
     public Award() {}

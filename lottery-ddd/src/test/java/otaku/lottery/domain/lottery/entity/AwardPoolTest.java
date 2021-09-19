@@ -20,7 +20,7 @@ public class AwardPoolTest {
 
     @Test
     public void drawAward() {
-        AwardPool awardPool = new AwardPool(1L, "pool");
+        AwardPool awardPool = new AwardPool(1L, 1L, "pool");
         InMemoryAwardRepository awardRepository = new InMemoryAwardRepository();
         awardPool.setAwardRepository(awardRepository);
         double totalChance = 0;

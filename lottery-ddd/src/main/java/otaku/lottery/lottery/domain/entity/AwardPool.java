@@ -11,17 +11,21 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * awardPool 是一个entity，有可能需要设置多个奖池，每个奖池是独立的
+ *
+ * awardPool应该是一个聚合根，所有逻辑的入口应该是聚合根
  */
 public class AwardPool implements Entity {
     //外部确保id唯一
     private Long id;
     //奖池名称，用于展示
     private String name;
+    //奖池拥有者id
+    private Long ownerId;
     private AwardRepository awardRepository;
 
     public AwardPool() {}
 
-    public AwardPool(Long id, String name) {
+    public AwardPool(Long id, Long ownerId, String name) {
         this.id = id;
         this.name = name;
     }
@@ -31,6 +35,35 @@ public class AwardPool implements Entity {
      */
     public List<Award> getAwards() {
         return awardRepository.findAwardsByPoolId(id);
+    }
+
+    /**
+     * 创建奖池的人
+     */
+    public User getOwner() {
+        return null;
+    }
+
+    /**
+     * 查找可参与抽奖的人
+     */
+    public List<User> getParticipants() {
+        //TODO 委托repository找到所有的参与者
+        return null;
+    }
+
+    /**
+     * 判断user是否为奖池参与者
+     */
+    public boolean isParticipant(Long userId) {
+        return false;
+    }
+
+    /**
+     * 获取抽奖结果
+     */
+    public List<DrawRecord> getDrawResults() {
+        return null;
     }
 
     private static class Range {

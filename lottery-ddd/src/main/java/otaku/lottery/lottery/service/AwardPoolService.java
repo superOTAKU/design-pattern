@@ -1,7 +1,5 @@
 package otaku.lottery.lottery.service;
 
-import otaku.lottery.lottery.domain.entity.Award;
-
 public interface AwardPoolService {
 
     /**
@@ -9,6 +7,13 @@ public interface AwardPoolService {
      * @param awardPoolId 奖池id
      *
      */
-    public String drawAward(Long awardPoolId);
+     String drawAward(Long awardPoolId);
+
+    /**
+     * 创建奖池
+     * @param userId 奖池拥有者
+     * @param name 奖池名称
+     */
+     Long createAwardPool(Long userId, String name);
 
 }
