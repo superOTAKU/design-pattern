@@ -1,5 +1,7 @@
 package org.otaku.school.common.domain.event;
 
+import java.util.Collection;
+
 /**
  * 事件总线，可以有不同的实现，最简单是用Spring的ApplicationEvent
  */
@@ -10,4 +12,6 @@ public interface EventBus {
      * @param event 事件
      */
     void dispatchEvent(DomainEvent event);
+
+    void dispatchEvents(Collection<? extends DomainEvent> events);
 }
